@@ -49,6 +49,6 @@ See the [SORT license](https://github.com/abewley/sort/blob/master/LICENSE) for 
 ### [DeepSORT with PyTorch](https://github.com/ZQPei/deep_sort_pytorch) - MIT License
 This project includes components from `deep_sort_pytorch` for appearance-based MOT.
 It is licensed under the MIT License.
-See the [deep_sort_pytorch license](https://github.com/ZQPei/deep_sort_pytorch/blob/master/LICENSE) for more information.
+See the [deep_sort_pytorch license](https://github.com/JS-10/Cell_Tracking_Project_6/blob/main/deep_sort_pytorch/LICENSE) for more information.
 
-We have made several adaptations to the original code to fit our dataset and project structure. For details on our changes, see the [adapted README](https://github.com/JS-10/Cell_Tracking_Project_6/deep_sort_pytorch/README.md).
+We have made several adaptations to the original code to fit our dataset and project structure. For details on our changes, see the [adapted README](https://github.com/JS-10/Cell_Tracking_Project_6/blob/main/deep_sort_pytorch/README.md).
