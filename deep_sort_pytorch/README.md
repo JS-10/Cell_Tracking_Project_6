@@ -1,4 +1,26 @@
-# Deep Sort with PyTorch
+# Deep Sort with PyTorch (Adapted)
+
+This directory contains an adapted version of [ZQPei/deep_sort_pytorch](https://github.com/ZQPei/deep_sort_pytorch), licensed under the MIT License.
+
+## What We’ve Changed
+
+| File/Module                      | Description of Change |
+|----------------------------------|------------------------|
+| `deep_sort/deep/train.py` | Use RandomResizedCrop instead of RandomCrop when transforming images for training. |
+| `deep_sort/deep/train.py` | New Argument: Enable choice of optimizer between SGD (original optimizer, default), SGD + Nesterov and Adam. |
+| `deep_sort/deep/train.py` | After training, print training loss, training accuracy, validation loss and validation accuracy per epoch. |
+| `deep_sort/deep/train.py` | Change path for saving each model per epoch under given project structure. |
+| `deep_sort/deep/train.py` | Change default of weights from './checkpoint/resnet18.pth' to None since they are pre-trained for pedestrians |
+| `deep_sort/deep/train.py` | New Argument: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values |
+| `deep_sort/deep/multi_train_utils/train_eval_utils.py` | Does not print out the entire iteration progress when training the appearance model. |
+
+Each adaptation was made during June / July 2025 by **Maximilian Karhausen** and **Johannes Simon**, and the code remains under the MIT License.
+
+## Original README
+
+*Below is the content from the original `deep_sort_pytorch/README.md`. Everything above this line reflects project-specific adaptations.*
+
+---
 
 ![](demo/demo.gif)
 
