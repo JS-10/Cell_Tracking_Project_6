@@ -30,7 +30,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
     mean_loss = torch.zeros(1).to(device)
     sum_num = torch.zeros(1).to(device)
     optimizer.zero_grad()
-    # Adaption: Out-comment this section to not print iteration progress (would print too much otherwise)
+    # Adaptation: Out-comment this section to not print iteration progress (would print too much otherwise)
     #if is_main_process():
     #    data_loader = tqdm(data_loader, file=sys.stdout)
 
@@ -69,7 +69,7 @@ def evaluate(model, data_loader, device):
     criterion = torch.nn.CrossEntropyLoss()
     test_loss = torch.zeros(1).to(device)
     sum_num = torch.zeros(1).to(device)
-    # Adaption: Out-comment this section to not print iteration progress (would print too much otherwise)
+    # Adaptation: Out-comment this section to not print iteration progress (would print too much otherwise)
     #if is_main_process():
     #    data_loader = tqdm(data_loader, file=sys.stdout)
 

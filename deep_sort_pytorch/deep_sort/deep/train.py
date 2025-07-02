@@ -52,7 +52,7 @@ def main(args):
     val_images_path, val_labels = val_info
 
     transform_train = torchvision.transforms.Compose([
-        # Adaption: Changed from RandomCrop to RandomResizedCrop to prevent error
+        # Adaptation: Changed from RandomCrop to RandomResizedCrop to prevent error
         torchvision.transforms.RandomResizedCrop((128, 64), scale=(0.8, 1.0)),
         torchvision.transforms.RandomHorizontalFlip(),
         torchvision.transforms.ToTensor(),
@@ -112,14 +112,14 @@ def main(args):
 
     # loss and optimizer
     pg = [p for p in net.parameters() if p.requires_grad]
-    # Adaption: Make optimizer dynamic, original SGD made to default choice
-    # Adaption: Option 1 (default): SGD
+    # Adaptation: Make optimizer dynamic, original SGD made to default choice
+    # Adaptation: Option 1 (default): SGD
     if args.optimizer == "sgd":
         optimizer = torch.optim.SGD(pg, args.lr, momentum=0.9, weight_decay=5e-4)
-    # Adaption: Option 2: SGD + Nesterov
+    # Adaptation: Option 2: SGD + Nesterov
     elif args.optimizer == "nesterov":
         optimizer = torch.optim.SGD(pg, args.lr, momentum=0.9, weight_decay=5e-4, nesterov=True)
-    # Adaption: Option 3: Adam
+    # Adaptation: Option 3: Adam
     elif args.optimizer == "adam":
         optimizer = torch.optim.Adam(pg, lr=args.lr, weight_decay=5e-4)
 
@@ -133,7 +133,7 @@ def main(args):
         test_positive, test_loss = evaluate(net, val_loader, device)
         test_acc = test_positive / len(val_dataset)
 
-        # Adaption: Print training / validation loss and accuracy per epoch instead of only accuracy per epoch
+        # Adaptation: Print training / validation loss and accuracy per epoch instead of only accuracy per epoch
         print('[epoch {}] train_loss: {}, train_acc: {}, val_loss: {}, val_acc: {}'.format(epoch, train_loss, train_acc, test_loss, test_acc))
 
         state_dict = {
@@ -141,7 +141,7 @@ def main(args):
             'acc': test_acc,
             'epoch': epoch
         }
-        # Adaption: Change path from './checkpoint/model_{}.pth' to 'deep_sort_pytorch/deep_sort/deep/checkpoint/model_{}.pth'
+        # Adaptation: Change path from './checkpoint/model_{}.pth' to 'deep_sort_pytorch/deep_sort/deep/checkpoint/model_{}.pth'
         torch.save(state_dict, 'deep_sort_pytorch/deep_sort/deep/checkpoint/model_{}.pth'.format(epoch))
         draw_curve(epoch, train_loss, 1 - train_acc, test_loss, 1 - test_acc, args.model_name)
 
@@ -153,12 +153,12 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument("--lr", default=0.001, type=float)
     parser.add_argument('--lrf', default=0.1, type=float)
-    # Adaption: Add optimizer, enable choice between SGD, SGD + Nesterov and Adam
+    # Adaptation: Add optimizer, enable choice between SGD, SGD + Nesterov and Adam
     parser.add_argument('--optimizer', type=str, default='sgd', choices=['sgd', 'nesterov', 'adam'])
-    # Adaption: Changed default for weights from './checkpoint/resnet18.pth' to None
+    # Adaptation: Changed default for weights from './checkpoint/resnet18.pth' to None
     parser.add_argument('--weights', type=str, default=None)
     parser.add_argument('--freeze-layers', action='store_true')
-    # Adaption: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values
+    # Adaptation: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values
     parser.add_argument('--model_name', type=str, default='default')
     parser.add_argument('--gpu_id', default='0', help='gpu id')
     args = parser.parse_args()

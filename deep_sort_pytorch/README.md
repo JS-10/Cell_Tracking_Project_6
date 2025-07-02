@@ -10,9 +10,21 @@ This directory contains an adapted version of [ZQPei/deep_sort_pytorch](https://
 | `deep_sort/deep/train.py` | New Argument: Enable choice of optimizer between SGD (original optimizer, default), SGD + Nesterov and Adam. |
 | `deep_sort/deep/train.py` | After training, print training loss, training accuracy, validation loss and validation accuracy per epoch. |
 | `deep_sort/deep/train.py` | Change path for saving each model per epoch under given project structure. |
-| `deep_sort/deep/train.py` | Change default of weights from './checkpoint/resnet18.pth' to None since they are pre-trained for pedestrians |
-| `deep_sort/deep/train.py` | New Argument: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values |
+| `deep_sort/deep/train.py` | Change default of weights from './checkpoint/resnet18.pth' to None since they are pre-trained for pedestrians. |
+| `deep_sort/deep/train.py` | New Argument: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values. |
 | `deep_sort/deep/multi_train_utils/train_eval_utils.py` | Does not print out the entire iteration progress when training the appearance model. |
+| `deepsort.py` | Adapt the tracker to handle frames as images (jpg, jpeg or png) instead of videos or camera input. |
+| `deepsort.py` | Remove filtering the tracker by person class only, living_cell and dead_cell required instead. |
+| `deepsort.py` | Do not write the tracking results frame by frame, but all at once after the tracking is finished. |
+| `deepsort.py` | Change default of video path from 'demo.avi' to 'dataset_jpg/dataset/001'. |
+| `deepsort.py` | Remove config files as arguments; detection done via YOLOv5, appearance model added manually as an argument. |
+| `deepsort.py` | Remove fastreid, mmdet and segment as arguments; prevents using the wrong appearance model or wrong detectors and doing unneeded segmentation for cells. |
+| `deepsort.py` | New Argument: Add appearance model as an argument instead of as a YAML file; allows direct value manipulation through `cell_tracking.ipynb`. |
+| `deepsort.py` | New Arguments: Add tracking parameters of `deep_sort.yaml` as arguments; allows direct value manipulation through `cell_tracking.ipynb`. Defaults equal the given values from the original `deep_sort.yaml` file. |
+| `deepsort.py` | Remove loading YAML files since they are not used now. |
+| `deepsort.py` | Create a config class that replaces any YAML files and handles any parameters directly. |
+| `deepsort.py` | Within the config class, set fastreid, segment and mmdet to False; prevents using the wrong appearance model or wrong detectors and doing unneeded segmentation for cells. |
+| `deepsort.py` | Within the config class, set all tracking parameters (originally from `deep_sort.yaml`) and the cell-trained appearance model to the given values from the arguments. |
 
 Each adaptation was made during June / July 2025 by **Maximilian Karhausen** and **Johannes Simon**, and the code remains under the MIT License.
 
