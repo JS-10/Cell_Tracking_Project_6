@@ -14,17 +14,29 @@ This directory contains an adapted version of [ZQPei/deep_sort_pytorch](https://
 | `deep_sort/deep/train.py` | New Argument: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values. |
 | `deep_sort/deep/multi_train_utils/train_eval_utils.py` | Does not print out the entire iteration progress when training the appearance model. |
 | `deepsort.py` | Adapt the tracker to handle frames as images (jpg, jpeg or png) instead of videos or camera input. |
-| `deepsort.py` | Remove filtering the tracker by person class only, living_cell and dead_cell required instead. |
+| `deepsort.py` | Add loading the annotations file during initialization of the tracker. |
+| `deepsort.py` | Before running the tracker, group all annotations by their image ID, all images by their ID, all image IDs by their file name and all categories by their name to find all of them more faster. |
+| `deepsort.py` | Remove building a redundant detector and set it to None instead; detector replaced by detections from annotations file. |
+| `deepsort.py` | Remove class names from non-existent detector. |
+| `deepsort.py` | Remove loading `coco_classes.json` that do not represent any cells. |
+| `deepsort.py` | Remove the part of code that does the detection with a selected detector; not needed as detections already exist. |
+| `deepsort.py` | Instead of running a detector, get detections from the annotations file and feed them into the tracker of DeepSORT. |
 | `deepsort.py` | Do not write the tracking results frame by frame, but all at once after the tracking is finished. |
-| `deepsort.py` | Change default of video path from 'demo.avi' to 'dataset_jpg/dataset/001'. |
+| `deepsort.py` | Change default of video path from 'demo.avi' to 'dataset_jpg/dataset/001/images'. |
 | `deepsort.py` | Remove config files as arguments; detection done via YOLOv5, appearance model added manually as an argument. |
-| `deepsort.py` | Remove fastreid, mmdet and segment as arguments; prevents using the wrong appearance model or wrong detectors and doing unneeded segmentation for cells. |
+| `deepsort.py` | Remove fastreid, mmdet and segment as arguments; prevents using the wrong appearance model and doing redundant detections of cells. |
 | `deepsort.py` | New Argument: Add appearance model as an argument instead of as a YAML file; allows direct value manipulation through `cell_tracking.ipynb`. |
+| `deepsort.py` | New Argument: Add test_folders as an argument to enable doing tracking on multiple folders. |
+| `deepsort.py` | New Argument: Add annotations file as an argument that replaces the detector. |
+| `deepsort.py` | Add default=True to argument for display. |
+| `deepsort.py` | Change default for display width and height to 1024 each, based on annotations information. |
 | `deepsort.py` | New Arguments: Add tracking parameters of `deep_sort.yaml` as arguments; allows direct value manipulation through `cell_tracking.ipynb`. Defaults equal the given values from the original `deep_sort.yaml` file. |
 | `deepsort.py` | Remove loading YAML files since they are not used now. |
 | `deepsort.py` | Create a config class that replaces any YAML files and handles any parameters directly. |
-| `deepsort.py` | Within the config class, set fastreid, segment and mmdet to False; prevents using the wrong appearance model or wrong detectors and doing unneeded segmentation for cells. |
+| `deepsort.py` | Within the config class, set fastreid, segment and mmdet to False; prevents using the wrong appearance model doing redundant detections of cells. |
+| `deepsort.py` | Within the config class, create a config container object for DeepSORT to enable assigning the values to the tracking parameters. |
 | `deepsort.py` | Within the config class, set all tracking parameters (originally from `deep_sort.yaml`) and the cell-trained appearance model to the given values from the arguments. |
+| `deepsort.py` | Run the VideoTracker of DeepSORT for all assigned test folders instead of for just one folder. |
 
 Each adaptation was made during June / July 2025 by **Maximilian Karhausen** and **Johannes Simon**, and the code remains under the MIT License.
 

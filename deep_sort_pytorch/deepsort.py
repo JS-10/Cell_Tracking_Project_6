@@ -46,10 +46,33 @@ class VideoTracker(object):
             # Allow frames in jpg, jpeg or png format
             if frame.lower().endswith('.jpg') or frame.lower().endswith('.jpeg') or frame.lower().endswith('.png')
         ])
+
+        # Adaptation: Load the COCO annotations from the annotations.json file
+        with open(args.ann_file, "r") as f:
+            coco = json.load(f)
+        # Adaptation: Group all annotations by their image ID to find all cells for each image more easily
+        self.annots_by_img = {}
+        for ann in coco["annotations"]:
+            self.annots_by_img.setdefault(ann["image_id"], []).append(ann)
+        # Adaptation: Group all images by their ID to find them more faster
+        self.img_by_id = {}
+        for img in coco["images"]:
+            self.img_by_id[img["id"]] = img
+        # Adaptation: Group all image IDs by their file name to find them more faster
+        self.img_id_by_file_name = {}
+        for img in coco["images"]:
+            self.img_id_by_file_name[img["file_name"]] = img["id"]
+        # Adaptation: Get all categories by their name before running the tracker to find them more faster
+        self.categories = {}
+        for cat in coco["categories"]:
+            self.categories[cat["id"]] = cat["name"]
             
-        self.detector = build_detector(cfg, use_cuda=use_cuda, segment=self.args.segment)
+        # Adaptation: Remove building a redundant detector and set it to None instead; detector replaced by detections from annotations file
+        #self.detector = build_detector(cfg, use_cuda=use_cuda, segment=self.args.segment)
+        self.detector = None
         self.deepsort = build_tracker(cfg, use_cuda=use_cuda)
-        self.class_names = self.detector.class_names
+        # Adaptation: Remove class names from non-existent detector
+        #self.class_names = self.detector.class_names
 
     # Adaptation: Function enter needed for this tracker, but remove content (apart from save_path) that relies on video or camera input that is not needed
     def __enter__(self):
@@ -90,26 +113,27 @@ class VideoTracker(object):
     def run(self):
         results = []
         idx_frame = 0
-        with open('coco_classes.json', 'r') as f:
-            idx_to_class = json.load(f)
-        # Adaptation: Loop through image (frame) folder instead of actual video
-        for img_path in self.video_frames:
+        # Adaptation: Remove loading coco_classes.json that do not represent any cells
+        #with open('coco_classes.json', 'r') as f:
+        #    idx_to_class = json.load(f)
+        # Adaptation: Loop through images (frames) instead of actual video
+        for img in self.video_frames:
             idx_frame += 1
             if idx_frame % self.args.frame_interval:
                 continue
 
             start = time.time()
             # Adaptation: Load image from path, not from actual video
-            ori_im = cv2.imread(img_path)
+            ori_im = cv2.imread(img)
             im = cv2.cvtColor(ori_im, cv2.COLOR_BGR2RGB)
 
+            # Adaptation: Remove the part of code that does the detection with a selected detector; not needed as detections already exist
             # do detection
-            if self.args.segment:
-                bbox_xywh, cls_conf, cls_ids, seg_masks = self.detector(im)
-            else:
-                bbox_xywh, cls_conf, cls_ids = self.detector(im)
+            #if self.args.segment:
+            #    bbox_xywh, cls_conf, cls_ids, seg_masks = self.detector(im)
+            #else:
+            #    bbox_xywh, cls_conf, cls_ids = self.detector(im)
 
-            # Adaptation: Don't filter by person only, living_cell and dead_cell are used in this project
             # select person class
             #mask = cls_ids == 0
 
@@ -119,12 +143,38 @@ class VideoTracker(object):
             #cls_conf = cls_conf[mask]
             #cls_ids = cls_ids[mask]
 
+            # Adaptation: Instead of running a detector, get detections from the annotations file and feed them into the tracker of DeepSORT
+            # Adaptation: Get the current image name from the whole path
+            img_name = os.path.relpath(img, self.video_path)
+            # Adaptation: Get the current image ID from the image name
+            img_id = self.img_id_by_file_name[img_name]
+            # Adaptation: Get the current annotations from the image ID
+            anns = self.annots_by_img.get(img_id, [])
+
+            # Adaptation: Get bounding box, confidence score and category of current image
+            bbox_xywh = []
+            confidences = []
+            categories = []
+            for ann in anns:
+                # Adaptation: Get center x and y coordinates of the bounding box with width and height
+                x_center, y_center, width, height = ann["bbox"]
+                # Adaptation: Add bounding box, confidence score of 1.0 and category of current cell
+                bbox_xywh.append([x_center, y_center, width, height])
+                confidences.append(1.0)
+                categories.append(ann["category_id"])
+            # Adaptation: Turn given lists into numpy arrays
+            bbox_xywh = np.array(bbox_xywh)
+            confidences = np.array(confidences)
+            categories = np.array(categories)
+
+            # Adaptation: Replace "old" tracking process with new one
             # do tracking
-            if self.args.segment:
-                seg_masks = seg_masks[mask]
-                outputs, mask_outputs = self.deepsort.update(bbox_xywh, cls_conf, cls_ids, im, seg_masks)
-            else:
-                outputs, _ = self.deepsort.update(bbox_xywh, cls_conf, cls_ids, im)
+            #if self.args.segment:
+            #    seg_masks = seg_masks[mask]
+            #    outputs, mask_outputs = self.deepsort.update(bbox_xywh, cls_conf, cls_ids, im, seg_masks)
+            #else:
+            #    outputs, _ = self.deepsort.update(bbox_xywh, cls_conf, cls_ids, im)
+            outputs, _ = self.deepsort.update(bbox_xywh, confidences, categories, im)
 
             # draw boxes for visualization
             if len(outputs) > 0:
@@ -165,21 +215,27 @@ class VideoTracker(object):
 def parse_args():
     parser = argparse.ArgumentParser()
     # Adaptation: Change default from demo video to first folder of dataset_jpg
-    parser.add_argument("--VIDEO_PATH", type=str, default='dataset_jpg/dataset/001')
+    parser.add_argument("--VIDEO_PATH", type=str, default='dataset_jpg/dataset')
+    # Adaptation: Add test_folders as an argument to enable doing tracking on multiple folders
+    parser.add_argument("--test_folders", nargs="+", default=["001"])
+    # Adaptation: Add annotations file as an argument that replaces the detector
+    parser.add_argument("--ann_file", type=str, default='dataset_jpg/dataset/annotations.json')
     # Adaptation: Remove config files as arguments; detection done via YOLOv5, appearance model done manually as an argument
     #parser.add_argument("--config_mmdetection", type=str, default="./configs/mmdet.yaml")
     #parser.add_argument("--config_detection", type=str, default="./configs/mask_rcnn.yaml")
     #parser.add_argument("--config_deepsort", type=str, default="./configs/deep_sort.yaml")
     #parser.add_argument("--config_fastreid", type=str, default="./configs/fastreid.yaml")
-    # Adaptation: Remove fastreid, mmdet and segment as arguments; prevents using the wrong appearance model or wrong detectors and doing unneeded segmentation for cells
+    # Adaptation: Remove fastreid, mmdet and segment as arguments; prevents using the wrong appearance model and doing redundant detections of cells
     #parser.add_argument("--fastreid", action="store_true")
     #parser.add_argument("--mmdet", action="store_true")
     #parser.add_argument("--segment", action="store_true")
     # parser.add_argument("--ignore_display", dest="display", action="store_false", default=True)
-    parser.add_argument("--display", action="store_true")
+    # Adaptation: Add default=True to argument for display
+    parser.add_argument("--display", action="store_true", default=True)
     parser.add_argument("--frame_interval", type=int, default=1)
-    parser.add_argument("--display_width", type=int, default=800)
-    parser.add_argument("--display_height", type=int, default=600)
+    # Adaptation: Change default for display width and height to 1024 each, based on annotations information
+    parser.add_argument("--display_width", type=int, default=1024)
+    parser.add_argument("--display_height", type=int, default=1024)
     parser.add_argument("--save_path", type=str, default="./output/")
     parser.add_argument("--cpu", dest="use_cuda", action="store_false", default=True)
     parser.add_argument("--camera", action="store", dest="cam", type=int, default="-1")
@@ -221,10 +277,11 @@ if __name__ == "__main__":
     # Adaptation: Create a config class that replaces any YAML files and handles any parameters directly
     class CellTrackingCfg:
         def __init__(self, args):
-            # Adaptation: Set fastreid, segment and mmdet to False; prevents using the wrong appearance model or wrong detectors and doing unneeded segmentation for cells
+            # Adaptation: Set fastreid, segment and mmdet to False; prevents using the wrong appearance model and doing redundant detections of cells
             self.USE_SEGMENT = False
             self.USE_MMDET = False
             self.USE_FASTREID = False
+            # Adaptation: Create a config container object for DeepSORT to enable assigning the values to the tracking parameters
             self.DEEPSORT = type('', (), {})()
             # Adaptation: Set all tracking parameters (originally from deep_sort.yaml) to the given values from the arguments
             self.DEEPSORT.MAX_AGE = args.max_age
@@ -239,6 +296,18 @@ if __name__ == "__main__":
 
     # Adaptation: Initialize config class with the passed arguments
     cfg = CellTrackingCfg(args)
-
-    with VideoTracker(cfg, args, video_path=args.VIDEO_PATH) as vdo_trk:
-        vdo_trk.run()
+    # Adaptation: Run the VideoTracker of DeepSORT for all assigned test folders
+    for folder_name in args.test_folders:
+        # Adaptation: Create the whole folder path for images, e.g. dataset_jpg/dataset/001/images
+        folder_path = os.path.join(args.VIDEO_PATH, folder_name, "images")
+        # Adaptation: Create a save path for each test folder
+        save_path = os.path.join(args.save_path, folder_name)
+        # Replace VIDEO_PATH and save_path with their newly created paths
+        args.VIDEO_PATH = folder_path
+        args.save_path = save_path 
+        # Print on which folder the tracker currently runs on
+        print("---------------------------------------------------------------------------------")
+        print(f"Run DeepSORT on {folder_name}...")
+        # Adaptation: Run the VideoTracker for each test folder instead of just once
+        with VideoTracker(cfg, args, video_path=args.VIDEO_PATH) as vdo_trk:
+            vdo_trk.run()
