@@ -5,14 +5,17 @@ import argparse
 import torch
 import warnings
 import json
-import sys
+# Adaptation: Remove unneeded import
+#import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'thirdparty/fast-reid'))
+# Adaptation: Remove unneeded path for FastReID; custom trained appearance model used
+#sys.path.append(os.path.join(os.path.dirname(__file__), 'thirdparty/fast-reid'))
 
 from detector import build_detector
 from deep_sort import build_tracker
-from utils.draw import draw_boxes
-from utils.parser import get_config
+# Adaptation: Remove unneeded imports
+#from utils.draw import draw_boxes
+#from utils.parser import get_config
 from utils.log import get_logger
 from utils.io import write_results
 
@@ -28,9 +31,10 @@ class VideoTracker(object):
         if not use_cuda:
             warnings.warn("Running in cpu mode which maybe very slow!", UserWarning)
 
-        if args.display:
-            cv2.namedWindow("test", cv2.WINDOW_NORMAL)
-            cv2.resizeWindow("test", args.display_width, args.display_height)
+        # Adaptation: Remove unneeded display settings; visualization done manually via cell_tracking.ipynb
+        #if args.display:
+        #    cv2.namedWindow("test", cv2.WINDOW_NORMAL)
+        #    cv2.resizeWindow("test", args.display_width, args.display_height)
 
         # Adaptation: Video capture not needed since frames as images are used
         #if args.cam != -1:
@@ -62,10 +66,6 @@ class VideoTracker(object):
         self.img_id_by_file_name = {}
         for img in coco["images"]:
             self.img_id_by_file_name[img["file_name"]] = img["id"]
-        # Adaptation: Get all categories by their name before running the tracker to find them more faster
-        self.categories = {}
-        for cat in coco["categories"]:
-            self.categories[cat["id"]] = cat["name"]
             
         # Adaptation: Remove building a redundant detector and set it to None instead; detector replaced by detections from annotations file
         #self.detector = build_detector(cfg, use_cuda=use_cuda, segment=self.args.segment)
@@ -74,7 +74,7 @@ class VideoTracker(object):
         # Adaptation: Remove class names from non-existent detector
         #self.class_names = self.detector.class_names
 
-    # Adaptation: Function enter needed for this tracker, but remove content (apart from save_path) that relies on video or camera input that is not needed
+    # Adaptation: Function enter needed for this tracker, but remove content (apart from save_path and save_results_path) that relies on video or camera input that is not needed
     def __enter__(self):
         #if self.args.cam != -1:
         #    ret, frame = self.vdo.read()
@@ -95,7 +95,7 @@ class VideoTracker(object):
 
             # path of saved video and results
         #    self.save_video_path = os.path.join(self.args.save_path, "results.avi")
-        #    self.save_results_path = os.path.join(self.args.save_path, "results.txt")
+            self.save_results_path = os.path.join(self.args.save_path, "results.txt")
 
             # create video writer
         #    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
@@ -176,15 +176,17 @@ class VideoTracker(object):
             #    outputs, _ = self.deepsort.update(bbox_xywh, cls_conf, cls_ids, im)
             outputs, _ = self.deepsort.update(bbox_xywh, confidences, categories, im)
 
-            # draw boxes for visualization
+            # "draw" boxes for visualization
             if len(outputs) > 0:
                 bbox_tlwh = []
                 bbox_xyxy = outputs[:, :4]
                 identities = outputs[:, -1]
                 cls = outputs[:, -2]
-                names = [idx_to_class[str(label)] for label in cls]
+                # Adaptation: Names not needed since nothing will be visualized here
+                #names = [idx_to_class[str(label)] for label in cls]
 
-                ori_im = draw_boxes(ori_im, bbox_xyxy, names, identities, None if not self.args.segment else mask_outputs)
+                # Adaptation: Remove draw_boxes since visualization will be done via cell_tracking.ipynb
+                #ori_im = draw_boxes(ori_im, bbox_xyxy, names, identities, None if not self.args.segment else mask_outputs)
 
                 for bb_xyxy in bbox_xyxy:
                     bbox_tlwh.append(self.deepsort._xyxy_to_tlwh(bb_xyxy))
@@ -193,12 +195,14 @@ class VideoTracker(object):
 
             end = time.time()
 
-            if self.args.display:
-                cv2.imshow("test", ori_im)
-                cv2.waitKey(1)
+            # Adaptation: Remove unneeded display; visualization done manually via cell_tracking.ipynb
+            #if self.args.display:
+            #    cv2.imshow("test", ori_im)
+            #    cv2.waitKey(1)
 
-            if self.args.save_path:
-                self.writer.write(ori_im)
+            # Adaptation: Remove saving videos since this tracker only handles images as frames
+            #if self.args.save_path:
+            #    self.writer.write(ori_im)
 
             # save results
             # Adaptation: Don't write results frame by frame, but all at once after the loop for more effectiveness
@@ -230,15 +234,16 @@ def parse_args():
     #parser.add_argument("--mmdet", action="store_true")
     #parser.add_argument("--segment", action="store_true")
     # parser.add_argument("--ignore_display", dest="display", action="store_false", default=True)
-    # Adaptation: Add default=True to argument for display
-    parser.add_argument("--display", action="store_true", default=True)
+    # Adaptation: Remove argument for display; causes error otherwise and will be done for specific frames in cell_tracking.ipynb instead
+    #parser.add_argument("--display", action="store_true", default=False)
     parser.add_argument("--frame_interval", type=int, default=1)
-    # Adaptation: Change default for display width and height to 1024 each, based on annotations information
-    parser.add_argument("--display_width", type=int, default=1024)
-    parser.add_argument("--display_height", type=int, default=1024)
+    # Adaptation: Remove arguments for display width and height; display not used here
+    #parser.add_argument("--display_width", type=int, default=800)
+    #parser.add_argument("--display_height", type=int, default=600)
     parser.add_argument("--save_path", type=str, default="./output/")
     parser.add_argument("--cpu", dest="use_cuda", action="store_false", default=True)
-    parser.add_argument("--camera", action="store", dest="cam", type=int, default="-1")
+    # Adaptation: Remove argument for camera; only images as frames are used here
+    #parser.add_argument("--camera", action="store", dest="cam", type=int, default="-1")
     # Adaptation: Add appearance model as an argument instead of as a YAML file; allows direct value manipulation through cell_tracking.ipynb
     parser.add_argument("--appearance_model", type=str)
     # Adaptation: Add tracking parameters of deep_sort.yaml as arguments; allows direct value manipulation through cell_tracking.ipynb
