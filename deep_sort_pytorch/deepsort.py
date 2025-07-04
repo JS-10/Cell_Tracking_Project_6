@@ -5,6 +5,8 @@ import argparse
 import torch
 import warnings
 import json
+# Adaptation: Add missing import numpy
+import numpy as np
 # Adaptation: Remove unneeded import
 #import sys
 
@@ -301,12 +303,15 @@ if __name__ == "__main__":
 
     # Adaptation: Initialize config class with the passed arguments
     cfg = CellTrackingCfg(args)
+    # Adaptation: Save base paths for video_path and save_path to prevent incorrect nested paths for multiple iterations
+    base_video_path = args.VIDEO_PATH
+    base_save_path = args.save_path
     # Adaptation: Run the VideoTracker of DeepSORT for all assigned test folders
     for folder_name in args.test_folders:
-        # Adaptation: Create the whole folder path for images, e.g. dataset_jpg/dataset/001/images
-        folder_path = os.path.join(args.VIDEO_PATH, folder_name, "images")
-        # Adaptation: Create a save path for each test folder
-        save_path = os.path.join(args.save_path, folder_name)
+        # Adaptation: Create the whole folder path for images, e.g. dataset_jpg/dataset/001/images, using the base video_path
+        folder_path = os.path.join(base_video_path, folder_name, "images")
+        # Adaptation: Create a save path for each test folder, using the base save_path
+        save_path = os.path.join(base_save_path, folder_name)
         # Replace VIDEO_PATH and save_path with their newly created paths
         args.VIDEO_PATH = folder_path
         args.save_path = save_path 

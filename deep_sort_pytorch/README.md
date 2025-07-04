@@ -13,7 +13,7 @@ This directory contains an adapted version of [ZQPei/deep_sort_pytorch](https://
 | `deep_sort/deep/train.py` | Change default of weights from './checkpoint/resnet18.pth' to None since they are pre-trained for pedestrians. |
 | `deep_sort/deep/train.py` | New Argument: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values. |
 | `deep_sort/deep/multi_train_utils/train_eval_utils.py` | Does not print out the entire iteration progress when training the appearance model. |
-| `deepsort.py` | Remove unneeded imports after changes made on the tracker. |
+| `deepsort.py` | Remove unneeded imports and add missing imports after changes made on the tracker. |
 | `deepsort.py` | Remove unneeded path for FastReID; custom trained appearance model used. |
 | `deepsort.py` | Adapt the tracker to handle frames as images (jpg, jpeg or png) instead of videos or camera input. |
 | `deepsort.py` | Remove unneeded display settings and box drawing altogether; visualization will be done manually via `cell_tracking.ipynb`. |
