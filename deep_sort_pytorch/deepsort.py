@@ -1,4 +1,6 @@
 import os
+# Adaptation: Add this to prevent error with libiomp5md.dll
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import cv2
 import time
 import argparse
@@ -13,7 +15,8 @@ import numpy as np
 # Adaptation: Remove unneeded path for FastReID; custom trained appearance model used
 #sys.path.append(os.path.join(os.path.dirname(__file__), 'thirdparty/fast-reid'))
 
-from detector import build_detector
+# Adaptation: Remove unneeded imports
+#from detector import build_detector
 from deep_sort import build_tracker
 # Adaptation: Remove unneeded imports
 #from utils.draw import draw_boxes
@@ -28,6 +31,8 @@ class VideoTracker(object):
         self.args = args
         self.video_path = video_path
         self.logger = get_logger("root")
+        # Adaptation: Store the dataset root so relpath yields keys matching annotations
+        self.dataset_root = os.path.dirname(args.ann_file)
 
         use_cuda = args.use_cuda and torch.cuda.is_available()
         if not use_cuda:
@@ -46,12 +51,14 @@ class VideoTracker(object):
         #    self.vdo = cv2.VideoCapture()
 
         # Adaptation: Replace the video capture with loading a list of image (frame) paths
-        self.video_frames = sorted([
-            os.path.join(self.video_path, frame)
-            for frame in os.listdir(self.video_path)
-            # Allow frames in jpg, jpeg or png format
-            if frame.lower().endswith('.jpg') or frame.lower().endswith('.jpeg') or frame.lower().endswith('.png')
-        ])
+        self.video_frames = []
+        for root, _, files in os.walk(self.video_path):
+            for file in files:
+                # Allow frames in jpg, jpeg or png format
+                if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+                    full_path = os.path.join(root, file)
+                    self.video_frames.append(full_path)
+        self.video_frames.sort()
 
         # Adaptation: Load the COCO annotations from the annotations.json file
         with open(args.ann_file, "r") as f:
@@ -69,9 +76,8 @@ class VideoTracker(object):
         for img in coco["images"]:
             self.img_id_by_file_name[img["file_name"]] = img["id"]
             
-        # Adaptation: Remove building a redundant detector and set it to None instead; detector replaced by detections from annotations file
+        # Adaptation: Remove building a redundant detector; detector replaced by detections from annotations file
         #self.detector = build_detector(cfg, use_cuda=use_cuda, segment=self.args.segment)
-        self.detector = None
         self.deepsort = build_tracker(cfg, use_cuda=use_cuda)
         # Adaptation: Remove class names from non-existent detector
         #self.class_names = self.detector.class_names
@@ -146,8 +152,9 @@ class VideoTracker(object):
             #cls_ids = cls_ids[mask]
 
             # Adaptation: Instead of running a detector, get detections from the annotations file and feed them into the tracker of DeepSORT
-            # Adaptation: Get the current image name from the whole path
-            img_name = os.path.relpath(img, self.video_path)
+            # Adaptation: Get the current image name from the whole path and convert backslashes to forward-slashes so it matches JSON keys
+            img_name = os.path.relpath(img, self.dataset_root)
+            img_name = img_name.replace(os.sep, '/')
             # Adaptation: Get the current image ID from the image name
             img_id = self.img_id_by_file_name[img_name]
             # Adaptation: Get the current annotations from the image ID

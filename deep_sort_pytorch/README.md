@@ -6,20 +6,24 @@ This directory contains an adapted version of [ZQPei/deep_sort_pytorch](https://
 
 | File/Module                      | Description of Change |
 |----------------------------------|------------------------|
+| `deep_sort/deep/train.py` | Use model_name instead of args.model_name as a parameter for draw_curve() to prevent syntax error. |
 | `deep_sort/deep/train.py` | Use RandomResizedCrop instead of RandomCrop when transforming images for training. |
 | `deep_sort/deep/train.py` | New Argument: Enable choice of optimizer between SGD (original optimizer, default), SGD + Nesterov and Adam. |
 | `deep_sort/deep/train.py` | After training, print training loss, training accuracy, validation loss and validation accuracy per epoch. |
 | `deep_sort/deep/train.py` | Change path for saving each model per epoch under given project structure. |
+| `deep_sort/deep/train.py` | Declare model name from arguments before passing it to draw_curve to prevent syntax error. |
 | `deep_sort/deep/train.py` | Change default of weights from './checkpoint/resnet18.pth' to None since they are pre-trained for pedestrians. |
 | `deep_sort/deep/train.py` | New Argument: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values. |
+| `deep_sort/deep/model.py` | Change number of classes to 126 (matches with custom trained appearance model) and activate ReID. |
 | `deep_sort/deep/multi_train_utils/train_eval_utils.py` | Does not print out the entire iteration progress when training the appearance model. |
+| `deepsort.py` | Add a command that prevents an error with libiomp5md.dll. |
 | `deepsort.py` | Remove unneeded imports and add missing imports after changes made on the tracker. |
 | `deepsort.py` | Remove unneeded path for FastReID; custom trained appearance model used. |
 | `deepsort.py` | Adapt the tracker to handle frames as images (jpg, jpeg or png) instead of videos or camera input. |
 | `deepsort.py` | Remove unneeded display settings and box drawing altogether; visualization will be done manually via `cell_tracking.ipynb`. |
 | `deepsort.py` | Add loading the annotations file during initialization of the tracker. |
 | `deepsort.py` | Before running the tracker, group all annotations by their image ID, all images by their ID and all image IDs by their file name to find all of them more faster. |
-| `deepsort.py` | Remove building a redundant detector and set it to None instead; detector replaced by detections from annotations file. |
+| `deepsort.py` | Remove building a redundant detector; detector replaced by detections from annotations file. |
 | `deepsort.py` | Remove class names from non-existent detector. |
 | `deepsort.py` | Remove loading `coco_classes.json` that do not represent any cells. |
 | `deepsort.py` | Remove the part of code that does the detection with a selected detector; not needed as detections already exist. |

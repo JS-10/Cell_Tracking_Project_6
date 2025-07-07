@@ -49,7 +49,8 @@ def make_layers(c_in, c_out, repeat_times, is_downsample=False):
 
 
 class Net(nn.Module):
-    def __init__(self, num_classes=751, reid=False):
+    # Adaptation: Change number of classe
+    def __init__(self, num_classes=126, reid=True):
         super(Net, self).__init__()
         # 3 128 64
         self.conv = nn.Sequential(

@@ -24,8 +24,8 @@ fig = plt.figure()
 ax0 = fig.add_subplot(121, title="loss")
 ax1 = fig.add_subplot(122, title="top1_err")
 
-
-def draw_curve(epoch, train_loss, train_err, test_loss, test_err, args.model_name):
+# Adaptation: Use model_name instead of args.model_name as a parameter for draw_curve() to prevent syntax error
+def draw_curve(epoch, train_loss, train_err, test_loss, test_err, model_name):
     global record
     record['train_loss'].append(train_loss)
     record['train_err'].append(train_err)
@@ -143,7 +143,9 @@ def main(args):
         }
         # Adaptation: Change path from './checkpoint/model_{}.pth' to 'deep_sort_pytorch/deep_sort/deep/checkpoint/model_{}.pth'
         torch.save(state_dict, 'deep_sort_pytorch/deep_sort/deep/checkpoint/model_{}.pth'.format(epoch))
-        draw_curve(epoch, train_loss, 1 - train_acc, test_loss, 1 - test_acc, args.model_name)
+        # Adaptation: Declare model name from arguments before passing it to draw_curve to prevent syntax error
+        model_name = args.model_name
+        draw_curve(epoch, train_loss, 1 - train_acc, test_loss, 1 - test_acc, model_name)
 
 
 if __name__ == '__main__':
