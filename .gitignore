@@ -6,3 +6,6 @@ dataset_png.zip
 .ipynb_checkpoints/
 output/
 checkpoint/
+__pycache__/
+**/__pycache__/
+*.pyc

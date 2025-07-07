@@ -49,7 +49,7 @@ def make_layers(c_in, c_out, repeat_times, is_downsample=False):
 
 
 class Net(nn.Module):
-    # Adaptation: Change number of classe
+    # Adaptation: Change number of classes to 126 (matches with custom trained appearance model) and activate ReID
     def __init__(self, num_classes=126, reid=True):
         super(Net, self).__init__()
         # 3 128 64
