@@ -14,7 +14,7 @@ This directory contains an adapted version of [ZQPei/deep_sort_pytorch](https://
 | `deep_sort/deep/train.py` | Declare model name from arguments before passing it to draw_curve to prevent syntax error. |
 | `deep_sort/deep/train.py` | Change default of weights from './checkpoint/resnet18.pth' to None since they are pre-trained for pedestrians. |
 | `deep_sort/deep/train.py` | New Argument: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values. |
-| `deep_sort/deep/model.py` | Change number of classes to 126 (matches with custom trained appearance model) and activate ReID. |
+| `deep_sort/deep/model.py` | Change number of classes to 5961 (matches with custom trained appearance model) and activate ReID. |
 | `deep_sort/deep/multi_train_utils/train_eval_utils.py` | Does not print out the entire iteration progress when training the appearance model. |
 | `deepsort.py` | Add a command that prevents an error with libiomp5md.dll. |
 | `deepsort.py` | Remove unneeded imports and add missing imports after changes made on the tracker. |
