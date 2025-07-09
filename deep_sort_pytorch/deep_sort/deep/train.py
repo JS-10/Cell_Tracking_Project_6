@@ -40,7 +40,7 @@ def draw_curve(epoch, train_loss, train_err, test_loss, test_err, model_name):
     if epoch == 0:
         ax0.legend()
         ax1.legend()
-    fig.savefig(f"train_{args.model_name}.jpg")
+    fig.savefig(f"train_graphics/train_{args.model_name}.jpg")
 
 
 def main(args):
