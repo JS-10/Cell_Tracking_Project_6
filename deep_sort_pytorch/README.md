@@ -7,6 +7,7 @@ This directory contains an adapted version of [ZQPei/deep_sort_pytorch](https://
 | File/Module                      | Description of Change |
 |----------------------------------|------------------------|
 | `deep_sort/deep/train.py` | Use model_name instead of args.model_name as a parameter for draw_curve() to prevent syntax error. |
+| `deep_sort/deep/train.py` | Save training plots in the train_graphics folder. |
 | `deep_sort/deep/train.py` | Use RandomResizedCrop instead of RandomCrop when transforming images for training. |
 | `deep_sort/deep/train.py` | New Argument: Enable choice of optimizer between SGD (original optimizer, default), SGD + Nesterov and Adam. |
 | `deep_sort/deep/train.py` | After training, print training loss, training accuracy, validation loss and validation accuracy per epoch. |
@@ -16,9 +17,11 @@ This directory contains an adapted version of [ZQPei/deep_sort_pytorch](https://
 | `deep_sort/deep/train.py` | New Argument: Add custom name for train.jpg to avoid overwriting when running for multiple hyperparameter values. |
 | `deep_sort/deep/model.py` | Change number of classes to 3376 (matches with custom trained appearance model) and activate ReID. |
 | `deep_sort/deep/multi_train_utils/train_eval_utils.py` | Does not print out the entire iteration progress when training the appearance model. |
+| `deep_sort_pytorch/utils/log.py` | Create new function get_logger_to_file, similar to get_logger, but it moves logging of tracker numbers to a txt file instead of spamming the console on the notebook. |
 | `deepsort.py` | Add a command that prevents an error with libiomp5md.dll. |
 | `deepsort.py` | Remove unneeded imports and add missing imports after changes made on the tracker. |
 | `deepsort.py` | Remove unneeded path for FastReID; custom trained appearance model used. |
+| `deepsort.py` | Use get_logger_to_file to move the per-frame logs to a txt file to prevent spammig the console in the notebook. |
 | `deepsort.py` | Adapt the tracker to handle frames as images (jpg, jpeg or png) instead of videos or camera input. |
 | `deepsort.py` | Remove unneeded display settings and box drawing altogether; visualization will be done manually via `cell_tracking.ipynb`. |
 | `deepsort.py` | Add loading the annotations file during initialization of the tracker. |
