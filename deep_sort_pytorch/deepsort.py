@@ -21,7 +21,8 @@ from deep_sort import build_tracker
 # Adaptation: Remove unneeded imports
 #from utils.draw import draw_boxes
 #from utils.parser import get_config
-from utils.log import get_logger
+# Adaptation: Add new logger function to import
+from utils.log import get_logger, get_logger_to_file
 from utils.io import write_results
 
 
@@ -30,7 +31,11 @@ class VideoTracker(object):
         self.cfg = cfg
         self.args = args
         self.video_path = video_path
-        self.logger = get_logger("root")
+        # Adaptation: Move the per-frame logs to a file to prevent spammig the console in the notebook
+        #self.logger = get_logger("root")
+        os.makedirs(self.args.save_path, exist_ok=True)
+        log_file = os.path.join(args.save_path, "log.txt") if args.save_path else "deepsort_log.txt"
+        self.logger = get_logger_to_file("root", log_file)
         # Adaptation: Store the dataset root so relpath yields keys matching annotations
         self.dataset_root = os.path.dirname(args.ann_file)
 
@@ -98,7 +103,6 @@ class VideoTracker(object):
         #    assert self.vdo.isOpened()
 
         if self.args.save_path:
-            os.makedirs(self.args.save_path, exist_ok=True)
             # TODO save masks
 
             # path of saved video and results
