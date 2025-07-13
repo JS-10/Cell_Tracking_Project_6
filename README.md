@@ -29,7 +29,7 @@ To get started, please follow these steps to install the necessary requirements:
 2.  **Clone the SORT Repository:**
     This project relies on the Simple Online and Realtime Tracking (SORT) repository. Clone it into your project directory using the following command:
     ```bash
-    git clone [https://github.com/abewley/sort.git](https://github.com/abewley/sort.git)
+    git clone https://github.com/abewley/sort.git
     ```
     Make sure the `sort` repository is cloned directly into your project's root.
 
