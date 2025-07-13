@@ -1,0 +1,16 @@
+opencv-python~=4.8.1.78
+lap>=0.4.0
+motmetrics==1.2.0
+filterpy==1.4.5           
+scikit-image>=0.19.3     
+Pillow~=9.0.1
+easydict~=1.13
+tqdm~=4.65.0
+scikit-learn>=0.22.2.post1
+matplotlib~=3.7.2
+seaborn~=0.11.2
+pandas~=1.5.2             
+PyYAML~=6.0             
+python-dateutil==2.8.1
+requests~=2.31.0
+python-dotenv~=0.21.0

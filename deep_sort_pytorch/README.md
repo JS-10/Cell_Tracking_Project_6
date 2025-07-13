@@ -2,6 +2,8 @@
 
 This directory contains an adapted version of [ZQPei/deep_sort_pytorch](https://github.com/ZQPei/deep_sort_pytorch), licensed under the MIT License.
 
+**Note:** We moved `requirements.txt` to the root directory and adapted it to work **only** for training and tracking. Built-in detectors do **not** work in this project with the given requirements.
+
 ## What We’ve Changed
 
 | File/Module                      | Description of Change |

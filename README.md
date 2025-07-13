@@ -26,13 +26,27 @@ To get started, please follow these steps to install the necessary requirements:
     ```bash
     git clone https://github.com/JS-10/Cell_Tracking_Project_6.git
     ```
-2.  **Install Python Dependencies:**
-    Navigate to the root directory of this project and install the required Python packages using pip:
+
+2.  **Install Numpy and Scipy:**
+    Navigate to the root directory of this project and install numpy and scipy first by using pip:
+    ```bash
+    pip install numpy~=1.23.5
+    pip install scipy~=1.10.1
+    ```
+
+3.  **Install Python Dependencies:**
+    In the same root directory, install the required Python packages using pip:
     ```bash
     pip install -r requirements.txt
     ```
 
-3.  **Clone the SORT Repository:**
+4.  **Install PyTorch Dependencies:**
+    In the same root directory, install the PyTorch dependencies independently to have access to GPUs, using the following pip command:
+    ```bash
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+    ```
+
+5.  **Clone the SORT Repository:**
     This project relies on the Simple Online and Realtime Tracking (SORT) repository. Clone it into your project directory using the following command:
     ```bash
     git clone https://github.com/abewley/sort.git
@@ -41,7 +55,7 @@ To get started, please follow these steps to install the necessary requirements:
 
 ## Usage
 
-This project's primary workflow is managed through the [cell_tracking_hpc.ipynb](/cell_tracking_hpc.ipynb) Jupyter Notebook. This notebook guides you through the process of setting up your data, training the DeepSORT model (if desired), and performing tracking with both DeepSORT and SORT, followed by evaluation.
+This project's primary workflow is managed through the [cell_tracking_hpc.ipynb](/cell_tracking_hpc.ipynb) Jupyter Notebook. This notebook guides you through the process of setting up your data, training the appearance model of DeepSORT, and performing tracking with both DeepSORT and SORT, followed by evaluation.
 1.  **Launch Jupyter Notebook and open ```cell_tracking_hpc.ipynb```**:
     ```bash
     jupyter notebook cell_tracking_hpc.ipynb
@@ -55,14 +69,35 @@ This project's primary workflow is managed through the [cell_tracking_hpc.ipynb]
         DATASET_DIR = "path/to/your/unzipped_dataset_jpg_folder"
         ANN_FILE = "path/to/your/annotations.json"
         ```
-4.  **Configure and Run DeepSORT Training (Optional)**
-    -   Navigate to the DeepSORT training section in the notebook.
-    -   Adjust the hyperparameter arrays for ```batch_sizes```, ```lrs``` (learning rates), and ```optimizer``` to test different configurations.
-    -   After the training runs, manually select and set the ```best_lr```, ```best_opt```, ```best_batch_size```, and ```best_model``` variables within the notebook to use the optimized parameters for tracking.
-5.  **Configure and Run DeepSORT Tracking**
-    -   Go to the DeepSORT tracking section in the notebook.
-    -   Define arrays for different parameter values you wish to test, such as ```max_age```, ```n_init```, ```min_confidence```, ```max_iou_distance```, ```max_dist```, and ```nms_max_overlap```.
-    -   After the tracking process, manually select the best performing values and assign them to ```best_max_age```, ```best_n_init```, ```best_min_confidence```, ```best_max_iou_distance```, ```best_max_dist```, and ```best_nms_max_overlap``` for final evaluation.
+4.  **Train the Appearance Model of DeepSORT**
+    -   **After** running the code to crop the cells, navigate to the DeepSORT training section in the notebook.
+    -   Training is performed using CLI commands that invoke the `train.py` script inside the cloned DeepSORT repo (`./deep_sort_pytorch/deep_sort/deep/train.py`). These commands are run from the notebook using `!python`.
+    -   If you want to **test and compare different configurations**, adjust the hyperparameter arrays for ```batch_sizes```, ```lrs``` (learning rates), and ```optimizer```.
+    -   After running each test, manually select and set the ```best_lr```, ```best_opt``` and ```best_batch_size``` variables within the notebook to use the optimized parameters for final tracking.
+    -   If you want to **skip testing and directly train an appearance model**, just run the cells with the pre-selected values (or change the values as you like, does not guarantee good results though) for ```best_lr```, ```best_opt``` and ```best_batch_size```, and for training the appearance model, run the final cell before it shows the loss plot.
+    -   Example command that you **do not need to run manually, as the notebook builds and runs it for you**:
+        ```python
+        !python deep_sort_pytorch/deep_sort/deep/train.py --data-dir cell_crops --epochs 60 --batch_size {best_batch_size} --lr {best_lr} --optimizer {best_opt} --model_name {model_name}
+        ```
+    -   After training, you can find all appearance models as `.pth` files in the directory `deep_sort_pytorch/deep_sort/deep/checkpoint`.
+5.  **Configure and Run DeepSORT Tracking** 
+    -   **After** training the appearance model, navigate to the DeepSORT tracking section in the notebook.
+    -   Tracking with DeepSORT is also performed using CLI commands; here they invoke the `deepsort.py` script inside the cloned DeepSORT repo (`./deep_sort_pytorch/deepsort.py`). These commands are run from the notebook using `!python`.
+    -   For the parameter ```best_model```, manually select the best-performing appearance model from training before.
+    -   Example usage (same as in the respective cell):
+        ```python
+        best_model = 'deep_sort_pytorch/deep_sort/deep/checkpoint/model_59.pth'
+        ```
+    -   If you want to **test and compare different configurations**, define arrays for different hyperparameter values in the same cell where you select the appearance model, such as ```max_age```, ```n_init```, ```min_confidence```, ```max_iou_distance```, ```max_dist```, and ```nms_max_overlap```.
+    -   After tracking with each configuration, manually select the best performing values and assign them to ```best_max_age```, ```best_n_init```, ```best_min_confidence```, ```best_max_iou_distance```, ```best_max_dist```, and ```best_nms_max_overlap``` for final evaluation.
+    -   If you want to **skip testing and directly track with DeepSORT**, just run the cells with the pre-selected values (or change the values as you like, does not guarantee good results though) for ```best_max_age```, ```best_n_init```, ```best_min_confidence```, ```best_max_iou_distance```, ```best_max_dist```, and ```best_nms_max_overlap```, and for DeepSORT tracking, run the final cell before the tracklet visualizations.
+    -   Example command that you **do not need to run manually, as the notebook builds and runs it for you**:
+        ```python
+        !python deep_sort_pytorch/deepsort.py --save_path "./output/test" --test_folders {test_folders_str} --appearance_model {best_model} --max_age {best_max_age} --n_init {best_n_init} --min_confidence {best_min_confidence} --max_iou_distance {best_max_iou_distance} --max_dist {best_max_dist} --nms_max_overlap {best_nms_max_overlap}
+        ```
+    -   After tracking, you can find the `results.txt` with the bounding boxes of the tracklets and the `log.txt` with the tracking numbers per frame in the directory:
+        -   `./output/val` for **testing and comparing different configurations**
+        -   `./output/test` for **runing the final tracking**
 6.  **Configure and Run SORT Tracking**
     -   Locate the SORT tracking section in the notebook.
     -   Modify the templates array to define different sets of parameters for SORT, including ```'MAX_AGE'```, ```'MIN_HITS'```, and ```'IOU_THRESHOLD'```. Each dictionary in the templates array represents a unique configuration you wish to test.
@@ -100,7 +135,7 @@ For any further inquiries or assistance, feel free to contact us!
 This project is available under the [GNU General Public License v3.0 (GPLv3)](LICENSE) and uses the following third-party code:
 
 ### [SORT](https://github.com/abewley/sort) — GPLv3 License  
-This project will include source code from `SORT` for multi-object tracking (MOT). 
+This project depends on source code from `SORT` for multi-object tracking (MOT), which must be cloned manually and is not included directly in the repository.
 It is licensed under the GNU General Public License v3.0 (GPLv3).
 See the [SORT license](https://github.com/abewley/sort/blob/master/LICENSE) for more information.
 
