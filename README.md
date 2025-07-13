@@ -1,6 +1,6 @@
 # Cell Tracking (Project 6)
 
-This project was developed as part of the course "Computer Vision" at the University of Cologne and supervised by Prof. Dr. Kasia Bozek, Dr. Noémie Moreau,  Dr. France Rose and Paul Hahn, M. Sc.
+This project was developed as part of the course "Computer Vision" at the University of Cologne and supervised by Prof. Dr. Kasia Bozek, Dr. Noémie Moreau,  Dr. France Rose and Paul Hahn (M. Sc.).
 
 ## Description
 
@@ -8,11 +8,30 @@ This project was developed as part of the course "Computer Vision" at the Univer
 
 ## Requirements
 
-[...]
+Before proceeding with the installation, ensure your system meets the following requirements:
+
+* **Python:** Version 3.9 or higher.
+* **Disk Space:** if using the same dataset, At least 20GB of free disk space for the unzipped dataset_jpg.
+* **Performance Requirements:** We used [RAMSES](https://itcc.uni-koeln.de/hpc/hpc/ramses) to do high performance computations like training our DeepSORT model.
+
+**Note:** If you plan to utilize GPU acceleration, an NVIDIA GPU with CUDA Toolkit installed is required. 
     
 ## Installation
 
-[...]
+To get started, please follow these steps to install the necessary requirements:
+
+1.  **Install Python Dependencies:**
+    Navigate to the root directory of this project and install the required Python packages using pip:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+2.  **Clone the SORT Repository:**
+    This project relies on the Simple Online and Realtime Tracking (SORT) repository. Clone it into your project directory using the following command:
+    ```bash
+    git clone [https://github.com/abewley/sort.git](https://github.com/abewley/sort.git)
+    ```
+    Make sure the `sort` repository is cloned directly into your project's root.
 
 ## Usage
 
