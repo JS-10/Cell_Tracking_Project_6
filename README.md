@@ -22,13 +22,17 @@ Before proceeding with the installation, ensure your system meets the following 
 
 To get started, please follow these steps to install the necessary requirements:
 
-1.  **Install Python Dependencies:**
+1.  **Clone this Repository:**
+    ```bash
+    git clone https://github.com/JS-10/Cell_Tracking_Project_6.git
+    ```
+2.  **Install Python Dependencies:**
     Navigate to the root directory of this project and install the required Python packages using pip:
     ```bash
     pip install -r requirements.txt
     ```
 
-2.  **Clone the SORT Repository:**
+3.  **Clone the SORT Repository:**
     This project relies on the Simple Online and Realtime Tracking (SORT) repository. Clone it into your project directory using the following command:
     ```bash
     git clone https://github.com/abewley/sort.git
