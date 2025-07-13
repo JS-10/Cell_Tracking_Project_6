@@ -50,7 +50,7 @@ def make_layers(c_in, c_out, repeat_times, is_downsample=False):
 
 class Net(nn.Module):
     # Adaptation: Change number of classes to 3376 (matches with custom trained appearance model)
-    def __init__(self, num_classes=124, reid=False):
+    def __init__(self, num_classes=3376, reid=False):
         super(Net, self).__init__()
         # 3 128 64
         self.conv = nn.Sequential(
