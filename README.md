@@ -97,7 +97,7 @@ This project's primary workflow is managed through the [cell_tracking_hpc.ipynb]
         ```
     -   After tracking, you can find the `results.txt` with the bounding boxes of the tracklets and the `log.txt` with the tracking numbers per frame in the directory:
         -   `./output/val` for **testing and comparing different configurations**
-        -   `./output/test` for **runing the final tracking**
+        -   `./output/test` for **running the final tracking**
 6.  **Configure and Run SORT Tracking**
     -   Locate the SORT tracking section in the notebook.
     -   Modify the templates array to define different sets of parameters for SORT, including ```'MAX_AGE'```, ```'MIN_HITS'```, and ```'IOU_THRESHOLD'```. Each dictionary in the templates array represents a unique configuration you wish to test.
