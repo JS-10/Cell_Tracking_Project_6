@@ -38,28 +38,28 @@ To get started, please follow these steps to install the necessary requirements:
 ## Usage
 
 This project's primary workflow is managed through the [cell_tracking_hpc.ipynb](/cell_tracking_hpc.ipynb) Jupyter Notebook. This notebook guides you through the process of setting up your data, training the DeepSORT model (if desired), and performing tracking with both DeepSORT and SORT, followed by evaluation.
-
-1.  ### Loading dataset and annotations
-    -   **Option 1: Using the same dataset:**
-        If you are using the same provided dataset as this project (dataset_jpg), you primarily need to specify its location inside the notebook:
-        ```python
-        DATASET_DIR = "path/to/your/unzipped_dataset_jpg_folder"
-        ```
-    -   **Option 2: Using a different dataset:**
-        For this, you'll need image frames (JPG) for one or multiple videos and a COCO-style annotation file and provide their location inside the notebook:
+1.  **Launch Jupyter Notebook and open ```cell_tracking_hpc_ipynb```**:
+    ```bash
+    jupyter notebook cell_tracking_hpc.ipynb
+    ```
+2.  **Loading dataset and annotations**
+    -   Within the ```cell_tracking_hpc.ipynb``` notebook, locate and set the following variables at the beginning of the relevant sections:
+        -   ```DATASET_DIR```: The path to your dataset directory containing the image frames.
+        -   ```ANN_FILE```: The path to your COCO-styled annotation JSON file. (Only required to be changed if not using the project's default dataset).
+    -   Example:
         ```python
         DATASET_DIR = "path/to/your/unzipped_dataset_jpg_folder"
         ANN_FILE = "path/to/your/annotations.json"
         ```
-2.  ### Configure and Run DeepSORT Training (Optional)
+4.  **Configure and Run DeepSORT Training (Optional)**
     -   Navigate to the DeepSORT training section in the notebook.
     -   Adjust the hyperparameter arrays for ```batch_sizes```, ```lrs``` (learning rates), and ```optimizer``` to test different configurations.
     -   After the training runs, manually select and set the ```best_lr```, ```best_opt```, ```best_batch_size```, and ```best_model``` variables within the notebook to use the optimized parameters for tracking.
-4.  ### Configure and Run DeepSORT Tracking
+5.  **Configure and Run DeepSORT Tracking**
     -   Go to the DeepSORT tracking section in the notebook.
     -   Define arrays for different parameter values you wish to test, such as ```max_age```, ```n_init```, ```min_confidence```, ```max_iou_distance```, ```max_dist```, and ```nms_max_overlap```.
     -   After the tracking process, manually select the best performing values and assign them to ```best_max_age```, ```best_n_init```, ```best_min_confidence```, ```best_max_iou_distance```, ```best_max_dist```, and ```best_nms_max_overlap``` for final evaluation.
-6.  ### Configure and Run SORT Tracking
+6.  **Configure and Run SORT Tracking**
     -   Locate the SORT tracking section in the notebook.
     -   Modify the templates array to define different sets of parameters for SORT, including ```'MAX_AGE'```, ```'MIN_HITS'```, and ```'IOU_THRESHOLD'```. Each dictionary in the templates array represents a unique configuration you wish to test.
         -    Example configuration:
