@@ -38,7 +38,7 @@ To get started, please follow these steps to install the necessary requirements:
 ## Usage
 
 This project's primary workflow is managed through the [cell_tracking_hpc.ipynb](/cell_tracking_hpc.ipynb) Jupyter Notebook. This notebook guides you through the process of setting up your data, training the DeepSORT model (if desired), and performing tracking with both DeepSORT and SORT, followed by evaluation.
-1.  **Launch Jupyter Notebook and open ```cell_tracking_hpc_ipynb```**:
+1.  **Launch Jupyter Notebook and open ```cell_tracking_hpc.ipynb```**:
     ```bash
     jupyter notebook cell_tracking_hpc.ipynb
     ```
